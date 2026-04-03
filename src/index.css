@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green:    #2D7A3A;
+  --dark:     #0F0F0F;
+  --offwhite: #F9F8F5;
+  --white:    #FFFFFF;
+  --amber:    #E8A020;
+  --border:   #E2E2DC;
+  --text:     #0F0F0F;
+  --muted:    #6B6B65;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--offwhite);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
