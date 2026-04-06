@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { motion, useInView } from 'framer-motion'
 
 const tiers = [
   {
@@ -84,80 +85,89 @@ const trustSignals = [
   { icon: '🔒', label: 'Secure payments via Stripe' },
 ]
 
-function TierCard({ tier, annual }) {
+function TierCard({ tier, annual, index }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
   const price = annual ? tier.annualPrice : tier.monthlyPrice
 
   return (
-    <div
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.15, ease: 'easeOut' }}
+      whileHover={{ y: tier.featured ? -2 : -4, transition: { duration: 0.2 } }}
       className={`
-        bg-white rounded-xl flex flex-col relative
+        bg-white rounded-xl flex flex-col relative cursor-default
         ${tier.featured
-          ? 'border-2 border-green shadow-xl py-10 px-8 md:-my-4'
-          : 'border border-border py-8 px-8'}
+          ? 'border-2 border-[#2D7A3A] shadow-xl py-10 px-8 md:-my-4'
+          : 'border border-[#E8E6E0] py-8 px-8'}
       `}
     >
-      {/* Badge */}
       {tier.badge && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <span className="bg-amber text-dark text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+          <span className="bg-[#E8A020] text-[#0D0D0D] text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
             {tier.badge}
           </span>
         </div>
       )}
 
-      {/* Header */}
       <div className="mb-6">
-        <h3 className="font-display text-2xl text-dark mb-2">{tier.name}</h3>
-        <p className="text-muted text-sm leading-relaxed">{tier.description}</p>
+        <h3 className="font-display text-2xl text-[#0D0D0D] mb-2">{tier.name}</h3>
+        <p className="text-[#6B6B65] text-sm leading-relaxed">{tier.description}</p>
       </div>
 
-      {/* Price */}
       <div className="mb-6">
         <div className="flex items-baseline gap-1">
-          <span className="font-display text-5xl text-dark">£{price}</span>
-          <span className="text-muted text-sm">/mo</span>
+          <motion.span
+            key={price}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="font-display text-5xl text-[#0D0D0D]"
+          >
+            £{price}
+          </motion.span>
+          <span className="text-[#6B6B65] text-sm">/mo</span>
         </div>
         {annual && (
-          <p className="text-green text-xs font-medium mt-1">Billed annually — save 20%</p>
+          <p className="text-[#2D7A3A] text-xs font-medium mt-1">Billed annually — save 20%</p>
         )}
       </div>
 
-      {/* Features */}
       <ul className="space-y-2.5 mb-8 flex-1">
         {tier.features.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 text-sm text-dark">
-            <span className="text-green mt-0.5 flex-shrink-0">✓</span>
+          <li key={f} className="flex items-start gap-2.5 text-sm text-[#0D0D0D]">
+            <span className="text-[#2D7A3A] mt-0.5 flex-shrink-0">✓</span>
             <span>{f}</span>
           </li>
         ))}
       </ul>
 
-      {/* Meta */}
-      <div className="border-t border-border pt-4 mb-6 space-y-1">
-        <p className="text-xs text-muted"><span className="font-medium text-dark">Setup:</span> {tier.setup}</p>
-        <p className="text-xs text-muted"><span className="font-medium text-dark">Platforms:</span> {tier.platforms}</p>
+      <div className="border-t border-[#E8E6E0] pt-4 mb-6 space-y-1">
+        <p className="text-xs text-[#6B6B65]"><span className="font-medium text-[#0D0D0D]">Setup:</span> {tier.setup}</p>
+        <p className="text-xs text-[#6B6B65]"><span className="font-medium text-[#0D0D0D]">Platforms:</span> {tier.platforms}</p>
       </div>
 
-      {/* CTAs */}
       <div className="space-y-3">
         {tier.name === 'Pro' ? (
           <Link
             to={tier.primaryHref}
-            className="block text-center bg-dark text-white font-medium py-3.5 rounded hover:bg-dark/90 transition-colors text-sm"
+            className="block text-center bg-[#0D0D0D] text-white font-medium py-3.5 rounded hover:bg-[#333] transition-colors text-sm"
           >
             {tier.primaryCTA}
           </Link>
         ) : tier.featured ? (
           <a
             href={tier.primaryHref}
-            className="block text-center bg-green text-white font-medium py-3.5 rounded hover:bg-green/90 transition-colors text-sm"
+            className="block text-center bg-[#2D7A3A] text-white font-medium py-3.5 rounded hover:bg-[#236130] transition-colors text-sm"
           >
             {tier.primaryCTA}
           </a>
         ) : (
           <a
             href={tier.primaryHref}
-            className="block text-center bg-dark text-white font-medium py-3.5 rounded hover:bg-dark/90 transition-colors text-sm"
+            className="block text-center bg-[#0D0D0D] text-white font-medium py-3.5 rounded hover:bg-[#333] transition-colors text-sm"
           >
             {tier.primaryCTA}
           </a>
@@ -165,59 +175,78 @@ function TierCard({ tier, annual }) {
         {tier.secondaryCTA && (
           <Link
             to={tier.secondaryHref}
-            className="block text-center border border-border text-muted font-medium py-3 rounded hover:border-dark/30 hover:text-dark transition-colors text-sm"
+            className="block text-center border border-[#E8E6E0] text-[#6B6B65] font-medium py-3 rounded hover:border-[#0D0D0D] hover:text-[#0D0D0D] transition-colors text-sm"
           >
             {tier.secondaryCTA}
           </Link>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 export default function Pricing() {
   const [annual, setAnnual] = useState(false)
+  const headingRef = useRef(null)
+  const headingInView = useInView(headingRef, { once: true, margin: '-80px' })
 
   return (
-    <section id="pricing" className="bg-offwhite py-20 px-6">
+    <section id="pricing" className="bg-[#F9F8F5] py-20 px-6">
       <div className="max-w-6xl mx-auto">
-        <p className="text-sm font-medium text-green uppercase tracking-widest mb-4 text-center">Simple pricing</p>
-        <h2 className="font-display text-4xl md:text-5xl text-dark text-center mb-4">
-          Pick your plan
-        </h2>
-        <p className="text-muted text-center mb-10">No hidden fees. No lock-in. Cancel any time.</p>
+        <motion.div
+          ref={headingRef}
+          initial={{ opacity: 0, y: 24 }}
+          animate={headingInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.45 }}
+        >
+          <p className="text-sm font-medium text-[#2D7A3A] uppercase tracking-widest mb-4 text-center">Simple pricing</p>
+          <h2 className="font-display text-4xl md:text-5xl text-[#0D0D0D] text-center mb-4">
+            One price. No surprises.
+          </h2>
+          <p className="text-[#6B6B65] text-center mb-10">No hidden fees. No lock-in. Cancel any time.</p>
+        </motion.div>
 
         {/* Toggle */}
         <div className="flex items-center justify-center gap-4 mb-14">
-          <span className={`text-sm font-medium ${!annual ? 'text-dark' : 'text-muted'}`}>Monthly</span>
+          <span className={`text-sm font-medium ${!annual ? 'text-[#0D0D0D]' : 'text-[#6B6B65]'}`}>Monthly</span>
           <button
             onClick={() => setAnnual(!annual)}
-            className={`relative w-12 h-6 rounded-full transition-colors ${annual ? 'bg-green' : 'bg-border'}`}
+            className={`relative w-12 h-6 rounded-full transition-colors ${annual ? 'bg-[#2D7A3A]' : 'bg-[#E8E6E0]'}`}
             aria-label="Toggle annual billing"
           >
-            <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${annual ? 'translate-x-6' : 'translate-x-0'}`}
+            <motion.span
+              animate={{ x: annual ? 24 : 2 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow"
+              style={{ left: 0 }}
             />
           </button>
-          <span className={`text-sm font-medium ${annual ? 'text-dark' : 'text-muted'}`}>
-            Annual <span className="text-green">(save 20%)</span>
+          <span className={`text-sm font-medium ${annual ? 'text-[#0D0D0D]' : 'text-[#6B6B65]'}`}>
+            Annual <span className="text-[#2D7A3A]">(save 20%)</span>
           </span>
         </div>
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-6 items-start mb-16">
-          {tiers.map((tier) => (
-            <TierCard key={tier.name} tier={tier} annual={annual} />
+          {tiers.map((tier, i) => (
+            <TierCard key={tier.name} tier={tier} annual={annual} index={i} />
           ))}
         </div>
 
         {/* Trust signals */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {trustSignals.map((t) => (
-            <div key={t.label} className="flex items-center gap-3 bg-white border border-border rounded-lg px-4 py-3">
+          {trustSignals.map((t, i) => (
+            <motion.div
+              key={t.label}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.35 }}
+              className="flex items-center gap-3 bg-white border border-[#E8E6E0] rounded-lg px-4 py-3"
+            >
               <span className="text-xl">{t.icon}</span>
-              <span className="text-sm text-dark font-medium">{t.label}</span>
-            </div>
+              <span className="text-sm text-[#0D0D0D] font-medium">{t.label}</span>
+            </motion.div>
           ))}
         </div>
       </div>

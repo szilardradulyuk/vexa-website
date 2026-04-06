@@ -7,9 +7,9 @@ export default function PricingPage() {
   return (
     <>
       <Nav />
-      <div className="bg-dark py-16 px-6 text-center">
-        <h1 className="font-display text-5xl text-white mb-4">Simple pricing</h1>
-        <p className="text-white/60 text-lg max-w-xl mx-auto">
+      <div className="bg-white py-16 px-6 text-center border-b border-[#E8E6E0]">
+        <h1 className="font-display text-5xl text-[#0D0D0D] mb-4">Simple pricing</h1>
+        <p className="text-[#6B6B65] text-lg max-w-xl mx-auto">
           One price. Everything included. No surprises.
         </p>
       </div>
